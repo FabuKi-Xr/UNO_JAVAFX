@@ -22,7 +22,6 @@ public class UnoDeck {
     //create deck
     public UnoDeck() {
         cards = new UnoCard[108];
-        cardInDeck = cards.length;
     }
     
     public void reset() {
@@ -78,7 +77,6 @@ public class UnoDeck {
 
     // cards empty -> should edit it to play until can find some winner
     public UnoCard drawCard() throws IllegalArgumentException {
-        System.out.println("cardInDeck : "+getCardInDeck());
         if (isEmpty()) {
             throw new IllegalArgumentException("Cann't draw a card since there are no cards in the deck");
         }
@@ -93,7 +91,6 @@ public class UnoDeck {
     }
     
     public UnoCard[] drawCard(int n){
-        
         if(n<0){
             throw new IllegalArgumentException("Please draw positive cards but tried to draw "+ n +" cards.");
         } 
@@ -105,9 +102,5 @@ public class UnoDeck {
             num[i] = cards[--cardInDeck];
         }
         return num;
-    }
-    
-    public int getCardInDeck(){
-        return cardInDeck;
     }
 }
