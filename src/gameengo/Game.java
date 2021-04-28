@@ -15,7 +15,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
-
+import javafx.geometry.Insets;
 /**
  *
  * @author USER
@@ -190,9 +190,9 @@ public class Game {
                     }
                 count++;
             }
-            
+        newCardRect.setStroke(Color.BLACK);
         hbox.getChildren().add(newCardRect);
-//        hbox.setma
+        HBox.setMargin(newCardRect, new Insets(0, 0, 0, -50));
 //        newCardRect.setStyle("-fx-margin-left: -50;");
         
         if (gameDirection == false) {
