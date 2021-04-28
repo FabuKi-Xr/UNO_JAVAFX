@@ -7,6 +7,7 @@ package gameengo;
 
 import java.util.ArrayList;
 import java.util.Random;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 /**
@@ -17,6 +18,7 @@ public class UnoDeck {
 
     private UnoCard[] cards;
     private int cardInDeck;
+    private String[] playerID;
     Game game;
     
     //create deck
@@ -29,32 +31,36 @@ public class UnoDeck {
         //UnoCard.Color[] colors = UnoCard.Color.values();
         UnoCard initCard = new UnoCard();
         cardInDeck = 0; // initialize with no cards in deck
-        
+        int count=0;
         for (int i = 0; i < initCard.colors.length - 1; i++) {
             UnoCard.Color color = initCard.colors[i];
-            cards[cardInDeck++] = new UnoCard(color,initCard.getValue(i));
+            cards[cardInDeck++] = new UnoCard(color,initCard.getValue(0));
+           // System.out.println("card : "+cards[count++].toString());
             for (int j = 1; j < 10; j++) {
-                cards[cardInDeck++] = new UnoCard(color, initCard.getValue(i));
-                cards[cardInDeck++] = new UnoCard(color, initCard.getValue(i));
+                cards[cardInDeck++] = new UnoCard(color, initCard.getValue(j));
+                //System.out.println("card : "+cards[count++].toString());
+                cards[cardInDeck++] = new UnoCard(color, initCard.getValue(j));
+                //System.out.println("card : "+cards[count++].toString());
             }
             UnoCard.Value[] values = new UnoCard.Value[] { UnoCard.Value.PlusTwo, UnoCard.Value.Reverse,
                     UnoCard.Value.Skip };
             for (UnoCard.Value value : values) {
+                
                 cards[cardInDeck++] = new UnoCard(color, value);
+               // System.out.println("card : "+cards[count++].toString());
                 cards[cardInDeck++] = new UnoCard(color, value);
+               // System.out.println("card : "+cards[count++].toString());
             }
         }
         UnoCard.Value[] values = new UnoCard.Value[] { UnoCard.Value.Wild, UnoCard.Value.WildFour };
         for (UnoCard.Value value : values) {
             for (int i = 0; i < 4; i++) {
                 cards[cardInDeck++] = new UnoCard(UnoCard.Color.Wild, value);
+               // System.out.println("card : "+cards[count++].toString()+ "card : "+ i);
             }
         }
+        //System.out.println("Count : " + count);
     }
-
-    // public void replaceDeck(ArrayList<UnoCard> cards) {
-    //     this.cards = cards.toArray(new UnoCard(cards.size())); // ???
-    // }
 
     public void replaceDeck(ArrayList<UnoCard> cards) {
         this.cards = cards.toArray(new UnoCard[cards.size()]);
@@ -78,19 +84,20 @@ public class UnoDeck {
 
     // cards empty -> should edit it to play until can find some winner
     public UnoCard drawCard() throws IllegalArgumentException {
-        System.out.println("cardInDeck : "+getCardInDeck());
+        //System.out.println("cardInDeck : "+getCardInDeck());
         if (isEmpty()) {
             throw new IllegalArgumentException("Cann't draw a card since there are no cards in the deck");
         }
         return cards[--cardInDeck]; // minus card from deck
     }
 
-    public ImageView drawCardImage() throws IllegalArgumentException {
+    public Image drawCardImage(UnoCard value , char alphabet) throws IllegalArgumentException {
         if (isEmpty()) {
             throw new IllegalArgumentException("Can't draw a card since the deck is empty");
         }
-        return new ImageView(cards[--cardInDeck].toString() + ".png"); // get picture from deck
+        return new Image("/pic/" + value.getValueToInt() + alphabet + ".png"); // get picture from deck
     }
+
     
     public UnoCard[] drawCard(int n){
         
@@ -109,5 +116,9 @@ public class UnoDeck {
     
     public int getCardInDeck(){
         return cardInDeck;
+    }
+    
+    public UnoCard getCardRandom(int i){
+        return cards[i];
     }
 }

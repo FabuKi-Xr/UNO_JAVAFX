@@ -19,10 +19,11 @@ public class UnoCard {
     public enum Value {
         Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine,
         PlusTwo, Reverse, Skip, Wild, WildFour;
+        
     }
 
     private Color color;
-    private Value value;
+    Value value;
     public Color[] colors = Color.values();
     public Value[] values = Value.values();
 
@@ -57,4 +58,22 @@ public class UnoCard {
         return "UnoCard [ Color :" + color + " , value :" + value + "]"; //To change body of generated methods, choose Tools | Templates.
     }
 
+    public int cardValue(UnoCard.Value cardValue){
+        if(cardValue == Value.PlusTwo || cardValue == Value.Wild || cardValue == value.WildFour){
+            return 10;
+        }
+        else{
+            return cardValue.ordinal();
+        }
+    }
+    public int getColorToInt(){
+            return color.ordinal();
+    }
+    public int getValueToInt(int i){
+            return this.values[i].ordinal();
+    }
+    
+    public int getValueToInt(){
+            return this.value.ordinal();
+    }
 }

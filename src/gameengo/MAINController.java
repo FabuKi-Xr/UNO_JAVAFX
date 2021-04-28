@@ -2,18 +2,23 @@ package gameengo;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
@@ -52,7 +57,8 @@ public class MAINController implements Initializable {
 
     private UnoDeck deck = new UnoDeck();
 
-    char[] picName = {'A','B','C','D','E'};
+    char[] picName = {'A', 'B', 'C', 'D', 'E'};
+    
     @FXML
     private Rectangle card7;
     @FXML
@@ -67,69 +73,30 @@ public class MAINController implements Initializable {
     private Rectangle card2;
     @FXML
     private Rectangle card1;
-    
-    ArrayList<Rectangle> cardRects;
-    @FXML
-    private Rectangle card8;
-    private Rectangle nowCard;
     @FXML
     private Rectangle nowCardRect;
-    
+
+    Rectangle[] startHand = {card1, card2, card3, card4, card5, card6, card7};
+    ArrayList<Rectangle> playerHand = new ArrayList<Rectangle>(Arrays.asList(startHand));
+
+    //ArrayList<Rectangle> cardRects;
+    @FXML
+    private HBox playerBox;
+
     public enum Value {
         Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine,
         PlusTwo, Reverse, Skip, Wild, WildFour;
 
     }
-    
+
     UnoCard nowCardPlay;
-            
+
     Image[] imageCardInit = new Image[7];
-    public void addTexture() {
 
-        for (char init = 'A'; init <= 'E'; init++) {
-            int n = 13;
-            //int numPic = 0;
-            //int count = 0;
-            if (init == 'E') {
-                n = 4;
-            }
-            for (int i = 1; i < n; i++) {
-                imagecards[i - 1] = new Image("/pic/" + i + init + ".png");
-                //cards[count].setFill(new ImagePattern(imagecards[i]));
-                //count++;
-            }
-        }
-
-    }
-
-    public void setRectangleImage() {
-
-    }
-//    public int[] ran() {
-//        
-//        for (int i = 1; i <= 108; i++) {
-//            ran2 = r.nextInt(Maxnum);
-//            temp[i - 1] = card[ran2];
-//            Maxnum--;
-//            for (int j = ran2; j < Maxnum; j++) {
-//                card[j] = card[j + 1];
-//            }
-//            int[] numcop = new int[Maxnum];
-//            System.arraycopy(card, 0, numcop, 0, Maxnum);
-//            card = new int[Maxnum];
-//            System.arraycopy(numcop, 0, card, 0, Maxnum);
-//        }
-//        return temp;
-//    }
-
-//    private void setTextureToDeck(UnoDeck deck){
-//        this.SetTexture();
-//        for()
-//    }
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         //nowCardRect.setFill(new ImagePattern(imageBlue1));
-        this.addTexture();
+        //this.addTexture();
         game = new Game(playerName);
         //game.start(game);
 
@@ -138,99 +105,78 @@ public class MAINController implements Initializable {
         int k = 0;
         for (UnoCard card : game.getPlayerHand(playerName[0])) {
             //System.out.println("cardDeck[i]"+ game.getPlayerHand(playerName[0]).get(i).toString());
-            for(UnoCard.Color card3 : game.getPlayerHand(playerName[0]).get(i).colors){
+            for (UnoCard.Color card3 : game.getPlayerHand(playerName[0]).get(i).colors) {
                 if (game.getPlayerHand(playerName[0]).get(i).getColor().equals(card.getColor(k++))) {
-                int j = 0;
-                char collectAlphabet = picName[k-1];
+                    int j = 0;
+                    char collectAlphabet = picName[k - 1];
 //                System.out.println("HI! color");
 //                System.out.println(game.getPlayerHand(playerName[0]).get(i).toString());
-                for (UnoCard.Value card2 : game.getPlayerHand(playerName[0]).get(i).values) {
+                    for (UnoCard.Value card2 : game.getPlayerHand(playerName[0]).get(i).values) {
 
-                    if (game.getPlayerHand(playerName[0]).get(i).getValue().equals(card.getValue(j++))) {
+                        if (game.getPlayerHand(playerName[0]).get(i).getValue().equals(card.getValue(j++))) {
 //                        System.out.println(game.getPlayerHand(playerName[0]).get(i).toString());
 //                        System.out.println("HI! value");
-                                System.out.println("/pic/"+card.getValueToInt(j-1)+collectAlphabet+".png");
-                                 imageCardInit[i] = new Image("/pic/"+card.getValueToInt(j-1)+collectAlphabet+".png");
-//                                 imageCardInit[i] = new Image("/pic/2D"+".png");
+                            System.out.println("/pic/" + card.getValueToInt(j - 1) + collectAlphabet + ".png");
+                            imageCardInit[i] = new Image("/pic/" + card.getValueToInt(j - 1) + collectAlphabet + ".png");
                         }
                     }
                 }
             }
-            
+
             k = 0;
             i++;
         }
         addImageToCard(imageCardInit);
         nowCardPlay = game.getDeck().drawCard();
         int temp = 0;
-        for(UnoCard.Color color : nowCardPlay.colors){
-            
-                if(nowCardPlay.getColor().equals(nowCardPlay.colors[temp])){
-                    nowCardRect.setFill(new ImagePattern(deck.drawCardImage(nowCardPlay,picName[temp])));
-                }
+        for (UnoCard.Color color : nowCardPlay.colors) {
+
+            if (nowCardPlay.getColor().equals(nowCardPlay.colors[temp])) {
+                nowCardRect.setFill(new ImagePattern(deck.drawCardImage(nowCardPlay, picName[temp])));
+            }
             temp++;
         }
-        
-        
+        //System.out.println("card8: " + card8.getFill().isOpaque());
     }
 
     @FXML
     private void drawMethod(MouseEvent event) {
         r1 = rand.nextInt(2) + 1;
-        nub++;
+
         UnoCard CardDraw;
-
-        CardDraw = game.getDeck().drawCard();
-        System.out.println("location: "+CardDraw.toString());
-            int count = 0;
-            for(UnoCard.Color color : CardDraw.colors){
-                if(CardDraw.getColor().equals(CardDraw.colors[count])){
-                    Image[] image = null;
-                    card8.setFill(new ImagePattern(deck.drawCardImage(CardDraw,picName[count])));
-                }
-            count++;
-        }
-        
+       // System.out.println("card8: " + card8.getFill().isOpaque());
+        boolean isFilledImage = false;
+            CardDraw = game.getDeck().drawCard();
             
+            game.submitDraw(playerName[0], playerHand,CardDraw, playerBox);
             
-//        Image imageRand = new Image("/pic/" + randDeck[0] + ".png");
-//        if (nub == 1) {
-//            initCards[6].setFill(new ImagePattern(imageRand));
-//            deck.drawCard();
-//        }
-//        if (nub == 2) {
-//            initCards[7].setFill(new ImagePattern(imageRand));
-//
-//        }
-//        if (nub == 3) {
-//            initCards[8].setFill(new ImagePattern(imageRand));
-//            deck.drawCard();
-//        }
-//        if (nub == 4) {
-//            initCards[9].setFill(new ImagePattern(imageRand));
-//            deck.drawCard();
-//        }
 
+        //playerBox.getChildren().add(card7);
     }
 
     @FXML
     private void clickCard1(MouseEvent event) {
-       nowCardRect.setFill(getTopCardPic(card1));
-        card1.setVisible(false);
-
+        nowCardRect.setFill(game.getTopCardPic(card1));
+        playerBox.getChildren().remove(card1);
+        playerBox.setAlignment(Pos.CENTER);
+        //game.submitPlayerCard(playerName[0], game.getPlayerHand(playerName[0]).get(0), UnoCard.Color.Yellow, nowCardRect, nowCardRect, playerBox);
     }
 
     @FXML
     private void clickCard2(MouseEvent event) {
-       nowCardRect.setFill(getTopCardPic(card2));
-        card2.setVisible(false);
+        nowCardRect.setFill(game.getTopCardPic(card2));
+        playerBox.getChildren().remove(card2);
+        playerBox.setAlignment(Pos.CENTER);
     }
 
-    public ImagePattern getTopCardPic(Rectangle topCard) { 
-        return (ImagePattern) topCard.getFill();
+    @FXML
+    private void clickCard3(MouseEvent event) {
+        nowCardRect.setFill(game.getTopCardPic(card3));
+        playerBox.getChildren().remove(card3);
+        playerBox.setAlignment(Pos.CENTER);
     }
 
-    private void addImageToCard(Image[] image){
+    private void addImageToCard(Image[] image) {
         card1.setFill(new ImagePattern(image[0]));
         card2.setFill(new ImagePattern(image[1]));
         card3.setFill(new ImagePattern(image[2]));
@@ -239,5 +185,5 @@ public class MAINController implements Initializable {
         card6.setFill(new ImagePattern(image[5]));
         card7.setFill(new ImagePattern(image[6]));
     }
-    
+
 }
