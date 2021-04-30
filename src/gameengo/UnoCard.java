@@ -23,6 +23,14 @@ public class UnoCard {
     }
 
     private Color color;
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public void setValue(Value value) {
+        this.value = value;
+    }
     Value value;
     public Color[] colors = Color.values();
     public Value[] values = Value.values();
@@ -76,4 +84,10 @@ public class UnoCard {
     public int getValueToInt(){
             return this.value.ordinal();
     }
+    
+    public void setColorAndValue(UnoCard.Color color ,UnoCard.Value value){
+        this.color = color;
+        this.value = value;
+    }
+    
 }

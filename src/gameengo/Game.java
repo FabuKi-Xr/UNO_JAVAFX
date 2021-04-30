@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.geometry.Insets;
+import javafx.scene.text.Font;
 /**
  *
  * @author USER
@@ -38,7 +39,14 @@ public class Game {
     private UnoCard topCard;
     private boolean gameDirection;
     char[] picName = {'A', 'B', 'C', 'D', 'E'};
+    private ArrayList<ArrayList<Rectangle>> playerRect;
 
+    public ArrayList<Rectangle> getPlayerRect(String pid) {
+        int index = Arrays.asList(playerID).indexOf(pid);
+        return playerRect.get(index);
+    }
+
+    
     public Game(String[] player_ID) { // initialgame
         deck = new UnoDeck(); // creat 108 cards 
         deck.reset();
@@ -55,9 +63,11 @@ public class Game {
             ArrayList<UnoCard> hand = new ArrayList<UnoCard>(Arrays.asList(deck.drawCard(7)));
             playerHand.add(hand);
         }
+        
+        
     }
 
-    public void start(Game game) {
+    public void start(Game game) {//
         UnoCard card = deck.drawCard();
         nowColor = card.getColor();
         nowValue = card.getValue();
@@ -138,6 +148,7 @@ public class Game {
         int index = Arrays.asList(playerID).indexOf(pid);
         return playerHand.get(index);
     }
+    
 
     public int getPlayerHandSize(String player) {
         return getPlayerHand(player).size();
@@ -165,21 +176,22 @@ public class Game {
 
     public void submitDraw(String playerName,ArrayList<Rectangle> rect,UnoCard drawCard,HBox hbox){
         //checkPlayerTurn(pid);
-        
+        int temp = getPlayerHand(playerName).size();
         if (deck.isEmpty()) {
             deck.replaceDeck(stockPile);
             deck.shuffle();
         }
         
         Rectangle newCardRect = new Rectangle();
+        newCardRect.setId("card"+(108-getDeck().getCardInDeck()));
         
         rect.add(newCardRect);
-        getPlayerHand(playerName).add(deck.drawCard());
-        
+        getPlayerHand(playerName).add(drawCard);
+        System.out.println("carddrown value : "+getPlayerHand(playerName).get(temp).toString());
         
         newCardRect.setFill(Color.AQUA);
-        newCardRect.setWidth(119.0f);
-        newCardRect.setHeight(159.0f);
+        newCardRect.setWidth(100.0f);
+        newCardRect.setHeight(140.0f);
         
         int count = 0;
 
@@ -209,120 +221,130 @@ public class Game {
         nowColor = color;
     }
 
-    /*public void submitPlayerCard(String pid, UnoCard nowCard, UnoCard playerCard,Rectangle cardRect,Rectangle nowCardRect,HBox playerBox)
+    public void submitPlayerCard(String pid, UnoCard nowCard, UnoCard playerCard,Rectangle cardRect,
+            Rectangle nowCardRect,HBox playerBox,ArrayList<Rectangle> playerHand)
+            
             throws InvalidColorSubmissionException, InvalidValueSubmissionException, InvalidPlayerTurnException {
+//        System.out.println("size outter : " + playerHand.size());
+System.out.println("====================== before ==================================");
+        System.out.println("playercard : " + playerCard.toString());
+        System.out.println("nowcard : " + nowCard.toString());
         
-        nowCardRect.setFill(getTopCardPic(cardRect));
-        playerBox.getChildren().remove(cardRect);
-        playerBox.setAlignment(Pos.CENTER);
+        for(UnoCard card : getPlayerHand(pid)){
+            System.out.println(card.toString());
+        }
+                
+        System.out.println(cardRect.toString());
+//        System.out.println("index : " + playerHand.toString());
         checkPlayerTurn(pid);
         
         ArrayList<UnoCard> pHand = getPlayerHand(pid);
-        nowColor = UnoCard.Color.Yellow;
-        if (!nowCardPlay(card)) {now
-            if (card.getColor() == UnoCard.Color.Wild) {
-                nowColor = card.getColor();
-                nowValue = card.getValue();
-            }
-            if (card.getColor() != nowColor) {
-                // get sound warning + card shake
-
-//                JLabel msgWarnColor = new JLabel(
-//                        "Invalid player move, expected color: " + nowColor + " but got color " + card.getColor());
-//                msgWarnColor.setFont(new Font("Tahoma", Font.BOLD, 48));
-//                JOptionPane.showMessageDialog(null, msgWarnColor);
-//                // throw new InvalidColorSubmissionException(msgWarnColor, actual, expected);
-                throw new InvalidColorSubmissionException(
-                        "Invalid player move, expected color: " + nowColor + " but got color " + card.getColor(),
-                        card.getColor(), nowColor); // delete later
-
-            } else if (card.getValue() != nowValue) {
-                // get sound warning + card shake
-
-//                JLabel msgWarnValue = new JLabel(
-//                        "Invalid player move, expected value: " + nowValue + " but got value " + card.getValue());
-//                msgWarnValue.setFont(new Font("Tahoma", Font.BOLD, 48));
-//                JOptionPane.showMessageDialog(null, msgWarnValue);
-                throw new InvalidValueSubmissionException(
-                        "Invalid player move, expected value: " + nowValue + " but got value " + card.getValue(),
-                        card.getValue(), nowValue);
-            }
-        }
-        pHand.remove(card);
-
-        if (hasEmptyHand(this.playerID[currentPlayer])) {
-
-//            Label msgWon = new JLabel(this.playerID[currentPlayer] + " won the game! Thank you for playing!");
-//            msgWon.setFont(new Font("Tahoma", Font.BOLD, 48));
-//            JOptionPane.showMessageDialog(null, msgWon);
-//            System.exit(0);
-        }
-        nowColor = card.getColor();
-        nowValue = card.getValue();
-        stockPile.add(card);
-
-        if (gameDirection == false) {
-            currentPlayer = (currentPlayer + 1) % playerID.length;
-        } else if (gameDirection == true) {
-            currentPlayer = (currentPlayer - 1) % playerID.length;
-            if (currentPlayer == -1) {
-                currentPlayer = playerID.length - 1;
-            }
-        }
-        if (card.getColor() == UnoCard.Color.Wild) {
-            nowColor = gameColor;
-        }
-        if (card.getValue() == UnoCard.Value.PlusTwo) {
-            pid = playerID[currentPlayer];
-            for (int i = 0; i < 2; i++) {
-                getPlayerHand(pid).add(deck.drawCard());
-            }
-//            JLabel msgPlusTwo = new JLabel(pid + " draw 2 cards!");
-        }
-
-        if (card.getValue() == UnoCard.Value.WildFour) {
-            pid = playerID[currentPlayer];
-            for (int i = 0; i < 4; i++) {
-                getPlayerHand(pid).add(deck.drawCard());
-            }
-//            JLabel msgPlusTwo = new JLabel(pid + " draw 4 cards!");
-        }
-
-        if (card.getValue() == UnoCard.Value.Skip) {
-//            JLabel msgSkip = new JLabel(playerID[currentPlayer] + " was Skipped!");
-//            msgSkip.setFont(new Font("Tahoma", Font.BOLD, 48));
-//            JOptionPane.showMessageDialog(null, msgSkip);
+        
+        this.nowColor = nowCard.getColor();
+        this.nowValue = nowCard.getValue();
+        System.out.println("boolean : " + playerCard.getColor().equals(nowCard.getColor()) + playerCard.getValue().equals(nowCard.getValue()));
+        if (playerCard.getColor().equals(nowCard.getColor()) || playerCard.getValue().equals(nowCard.getValue()) || playerCard.getColor().equals(UnoCard.Color.Wild)) {
+//            if (playerCard.getColor() == UnoCard.Color.Wild) {
+//                nowCard.setColor(playerCard.getColor());
+//                nowCard.setValue(playerCard.getValue()); // popup ? choose color
+//            }
+        //nowCard.setColorAndValue(playerCard.getColor(),playerCard.getValue());
+            System.out.println("index : " + playerHand.indexOf(cardRect));
+        //pHand.remove(playerCard);
+        //playerHand.remove(cardRect);
             
-            if (gameDirection == false) {
-                currentPlayer = (currentPlayer + 1) % playerID.length;
-            } else if (gameDirection == true) {
-                currentPlayer = (currentPlayer - 1) % playerID.length;
-                if (currentPlayer == -1) {
-                    currentPlayer = playerID.length - 1;
-                }
-            }
+        nowCard.setColor(playerCard.getColor());
+        nowCard.setValue(playerCard.getValue());
+        System.out.println("size inner : " + playerHand.size());
+        
+        System.out.println(cardRect.getFill().toString());
+        nowCardRect.setFill(cardRect.getFill());
+        System.out.println(nowCardRect.getFill().toString());
+        playerBox.getChildren().remove(cardRect);
+        System.out.println("====================== after ==================================");
+        for(UnoCard card : getPlayerHand(pid)){
+            System.out.println(card.toString());
         }
-
-        if (card.getValue() == UnoCard.Value.Reverse) {
-//            JLabel msgRe = new JLabel(pid + " changed the game direction!");
-//            msgRe.setFont(new Font("Tahoma", Font.BOLD, 48));
-//            JOptionPane.showMessageDialog(null, msgRe);
-
-            gameDirection ^= true;
-            if (gameDirection == true) {
-                currentPlayer = (currentPlayer - 2) % playerID.length;
-                if (currentPlayer == -1) {
-                    currentPlayer = playerID.length - 1;
-                }
-
-                if (currentPlayer == -2) {
-                    currentPlayer = playerID.length - 2;
-                }
-            } else if (gameDirection == false) {
-                currentPlayer = (currentPlayer + 2) % playerID.length;
-            }
+        for(Rectangle card : playerHand){
+            System.out.println(card.toString());
         }
-    }*/
+        //playerBox.
+        }
+        
+
+//        if (hasEmptyHand(this.playerID[currentPlayer])) {
+//
+////            Label msgWon = new JLabel(this.playerID[currentPlayer] + " won the game! Thank you for playing!");
+////            msgWon.setFont(new Font("Tahoma", Font.BOLD, 48));
+////            JOptionPane.showMessageDialog(null, msgWon);
+////            System.exit(0);
+//        }
+////        nowColor = nowCard.getColor();
+////        nowValue = nowCard.getValue();
+//        stockPile.add(nowCard);
+//
+////        if (gameDirection == false) {
+////            currentPlayer = (currentPlayer + 1) % playerID.length;
+////        } else if (gameDirection == true) {
+////            currentPlayer = (currentPlayer - 1) % playerID.length;
+////            if (currentPlayer == -1) {
+////                currentPlayer = playerID.length - 1;
+////            }
+////        }
+//        if (nowCard.getColor() == UnoCard.Color.Wild) {
+//            nowColor = playerCard.getColor();// !!!!
+//        }
+//        if (nowCard.getValue() == UnoCard.Value.PlusTwo) {
+//            pid = playerID[currentPlayer];
+//            for (int i = 0; i < 2; i++) {
+//                getPlayerHand(pid).add(deck.drawCard());
+//            }
+////            JLabel msgPlusTwo = new JLabel(pid + " draw 2 cards!");
+//        }
+//
+//        if (nowCard.getValue() == UnoCard.Value.WildFour) {
+//            pid = playerID[currentPlayer];
+//            for (int i = 0; i < 4; i++) {
+//                getPlayerHand(pid).add(deck.drawCard());
+//            }
+////            JLabel msgPlusTwo = new JLabel(pid + " draw 4 cards!");
+//        }
+//
+//        if (nowCard.getValue() == UnoCard.Value.Skip) {
+////            JLabel msgSkip = new JLabel(playerID[currentPlayer] + " was Skipped!");
+////            msgSkip.setFont(new Font("Tahoma", Font.BOLD, 48));
+////            JOptionPane.showMessageDialog(null, msgSkip);
+//            
+//            if (gameDirection == false) {
+//                currentPlayer = (currentPlayer + 1) % playerID.length;
+//            } else if (gameDirection == true) {
+//                currentPlayer = (currentPlayer - 1) % playerID.length;
+//                if (currentPlayer == -1) {
+//                    currentPlayer = playerID.length - 1;
+//                }
+//            }
+//        }
+//
+//        if (nowCard.getValue() == UnoCard.Value.Reverse) {
+////            JLabel msgRe = new JLabel(pid + " changed the game direction!");
+////            msgRe.setFont(new Font("Tahoma", Font.BOLD, 48));
+////            JOptionPane.showMessageDialog(null, msgRe);
+//
+//            gameDirection ^= true;
+//            if (gameDirection == true) {
+//                currentPlayer = (currentPlayer - 2) % playerID.length;
+//                if (currentPlayer == -1) {
+//                    currentPlayer = playerID.length - 1;
+//                }
+//
+//                if (currentPlayer == -2) {
+//                    currentPlayer = playerID.length - 2;
+//                }
+//            } else if (gameDirection == false) {
+//                currentPlayer = (currentPlayer + 2) % playerID.length;
+//            }
+//        }
+    }
 
     class InvalidPlayerTurnException extends Exception {
 
@@ -372,7 +394,13 @@ public class Game {
     public void setTopCard(UnoCard topCard) {
         
     }
-public ImagePattern getTopCardPic(Rectangle topCard) { 
+    public ImagePattern getTopCardPic(Rectangle topCard) { 
         return (ImagePattern) topCard.getFill();
     }
+    
+    public boolean checkPlayerTurn(String playerID){
+        return this.playerID[currentPlayer] == playerID;    }
+    
+    
+    
 }
