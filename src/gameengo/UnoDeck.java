@@ -6,6 +6,7 @@
 package gameengo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -121,5 +122,9 @@ public class UnoDeck {
     
     public UnoCard getCardRandom(int i){
         return cards[i];
+    }
+    
+    public UnoCard[] getAllCardInDeck(){
+        return cards;
     }
 }

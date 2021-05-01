@@ -30,13 +30,13 @@ public class MAINController implements Initializable {
     //private RectanglenowCardRect;
     @FXML
     private Button drawBtn;
-    
+
     Random rand = new Random();
-    
+
     int r1, nub = 0;
-    
+
     int[] randDeck = new int[108];
-    
+
     private Image[] imagecards = new Image[108];
 
 //    private int[] card = new int[108];
@@ -47,14 +47,14 @@ public class MAINController implements Initializable {
 //    private int ran2;
 
     private Image[] imageRand;
-    
+
     private String[] playerName = {"p1"};
     private Game game;
-    
+
     private UnoDeck deck = new UnoDeck();
-    
+
     char[] picName = {'A', 'B', 'C', 'D', 'E'};
-    
+
     @FXML
     private Rectangle card7;
     @FXML
@@ -85,17 +85,17 @@ public class MAINController implements Initializable {
     private Rectangle selectGreen;
     @FXML
     private AnchorPane selectWildScene;
-    
+
     public enum Value {
         Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine,
         PlusTwo, Reverse, Skip, Wild, WildFour;
-        
+
     }
-    
+
     UnoCard nowCardPlay;
-    
+
     Image[] imageCardInit = new Image[7];
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         //nowCardRect.setFill(new ImagePattern(imageBlue1));
@@ -112,56 +112,74 @@ public class MAINController implements Initializable {
                 if (game.getPlayerHand(playerName[0]).get(i).getColor().equals(card.getColor(k++))) {
                     int j = 0;
                     char collectAlphabet = picName[k - 1];
-//                System.out.println("HI! color");
-//                System.out.println(game.getPlayerHand(playerName[0]).get(i).toString());
                     for (UnoCard.Value card2 : game.getPlayerHand(playerName[0]).get(i).values) {
-                        
+
                         if (game.getPlayerHand(playerName[0]).get(i).getValue().equals(card.getValue(j++))) {
                             System.out.println(game.getPlayerHand(playerName[0]).get(i).toString());
-//                        System.out.println("HI! value");
                             System.out.println("/pic/" + card.getValueToInt(j - 1) + collectAlphabet + ".png");
                             imageCardInit[i] = new Image("/pic/" + card.getValueToInt(j - 1) + collectAlphabet + ".png");
                         }
                     }
                 }
             }
-            
+
             k = 0;
             i++;
         }
         Rectangle[] startHand = {card1, card2, card3, card4, card5, card6, card7};
         playerHand = new ArrayList<Rectangle>(Arrays.asList(startHand));
         
-                
         addImageToCard(imageCardInit);
         nowCardPlay = game.getDeck().drawCard();
+
+        if (nowCardPlay.getColor().equals(UnoCard.Color.Wild)) {
+            int temp = 0;
+            UnoCard tempCard = new UnoCard();
+            for (UnoCard card : game.getDeck().getAllCardInDeck()) {
+                if(!card.getColor().equals(UnoCard.Color.Wild)){
+                    tempCard = nowCardPlay;
+                    nowCardPlay = card;
+                    card = nowCardPlay;
+                }
+            }
+
+        }
+
         int temp = 0;
         for (UnoCard.Color color : nowCardPlay.colors) {
-            
+
             if (nowCardPlay.getColor().equals(nowCardPlay.colors[temp])) {
                 nowCardRect.setFill(new ImagePattern(deck.drawCardImage(nowCardPlay, picName[temp])));
             }
             temp++;
         }
         i = 0;
-        for(i=1;i<startHand.length;i++){
+        for (i = 1; i < startHand.length; i++) {
             System.out.println(startHand[i].toString());
         }
-        i = 0;
         System.out.println("playerHand size : " + playerHand.size());
-        
+
          for (Rectangle rect : playerHand) {
-            int count = i;
             //System.out.println("index : " + playerHand.toString());
             System.out.println("index : " + game.getPlayerHand(playerName[0]).toString());
-                 playerHand.get(i).setOnMouseClicked(new EventHandler<MouseEvent>(){
+            
+            System.out.println(playerHand.toString());
+            
+                 playerHand.get(playerHand.indexOf(rect)).setOnMouseClicked(new EventHandler<MouseEvent>(){
                 @Override
             public void handle(MouseEvent t) {
                 try { 
-            game.submitPlayerCard(playerName[0], nowCardPlay, game.getPlayerHand(playerName[0]).get(count),playerHand.get(count), nowCardRect, playerBox, playerHand);
+                    
+            System.out.println(playerHand.toString());
+           
+            game.submitPlayerCard(playerName[0], nowCardPlay, game.getPlayerHand(playerName[0]).get(playerHand.indexOf(rect)),playerHand.get(playerHand.indexOf(rect)), nowCardRect, playerBox, playerHand);
                 if(nowCardPlay.getColor().equals(UnoCard.Color.Wild)){
+                
                 selectWildScene.setVisible(true);
             }
+                
+            System.out.println("now card left : " + playerHand.size());
+            
         } catch (Game.InvalidColorSubmissionException ex) {
             Logger.getLogger(MAINController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Game.InvalidValueSubmissionException ex) {
@@ -171,9 +189,11 @@ public class MAINController implements Initializable {
         }
                 }
             });
-                 i++;
          }
+         
+         
     }
+
     @FXML
     private void drawMethod(MouseEvent event) {
         r1 = rand.nextInt(2) + 1;
@@ -182,17 +202,16 @@ public class MAINController implements Initializable {
         boolean isFilledImage = false;
         CardDraw = game.getDeck().drawCard();
         game.submitDraw(playerName[0], playerHand, CardDraw, playerBox);
-        int i = 0;
         for (Rectangle rect : playerHand) {
-            int count = i;
-                 playerHand.get(i).setOnMouseClicked(new EventHandler<MouseEvent>(){
+                 playerHand.get(playerHand.indexOf(rect)).setOnMouseClicked(new EventHandler<MouseEvent>(){
                 @Override
             public void handle(MouseEvent t) {
                 try { 
-            game.submitPlayerCard(playerName[0], nowCardPlay, game.getPlayerHand(playerName[0]).get(count),playerHand.get(count), nowCardRect, playerBox, playerHand);
+            game.submitPlayerCard(playerName[0], nowCardPlay, game.getPlayerHand(playerName[0]).get(playerHand.indexOf(rect)),playerHand.get(playerHand.indexOf(rect)), nowCardRect, playerBox, playerHand);
                if(nowCardPlay.getColor().equals(UnoCard.Color.Wild)){
                 selectWildScene.setVisible(true);
             } 
+               System.out.println("now card left : " + playerHand.size());
         } catch (Game.InvalidColorSubmissionException ex) {
             Logger.getLogger(MAINController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Game.InvalidValueSubmissionException ex) {
@@ -202,12 +221,10 @@ public class MAINController implements Initializable {
         }
                 }
             });
-                 i++;
          }
         //playerBox.getChildren().add(card7);
     }
-        
-    
+
     private void addImageToCard(Image[] image) {
         card1.setFill(new ImagePattern(image[0]));
         card2.setFill(new ImagePattern(image[1]));
@@ -217,20 +234,16 @@ public class MAINController implements Initializable {
         card6.setFill(new ImagePattern(image[5]));
         card7.setFill(new ImagePattern(image[6]));
     }
-    
-    
-        @FXML
+
+    @FXML
     private void selectColor(MouseEvent event) {
-        if(event.getSource() == selectRed){
+        if (event.getSource() == selectRed) {
             nowCardPlay.setColor(UnoCard.Color.Red);
-        }
-        else if(event.getSource() == selectBlue){
+        } else if (event.getSource() == selectBlue) {
             nowCardPlay.setColor(UnoCard.Color.Blue);
-        }
-        else if(event.getSource() == selectYellow){
+        } else if (event.getSource() == selectYellow) {
             nowCardPlay.setColor(UnoCard.Color.Yellow);
-        }
-        else{
+        } else {
             nowCardPlay.setColor(UnoCard.Color.Green);
         }
         selectWildScene.setVisible(false);
